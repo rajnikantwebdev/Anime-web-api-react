@@ -1,16 +1,13 @@
-import { useParams } from "react-router-dom"
-import useGetInfo from "../utils/useGetInfo"
-import useAnimeApi from "../utils/useAnimeApi";
+import { useContext } from "react";
+import { useGetInfo } from "../utils/useAnimeApi";
+import { PageContext } from "../utils/PageNumberContext";
 
 function AnimeCardDetailPage() {
-    const filteredData = useGetInfo();
+  const { pageNumber, airing } = useContext(PageContext);
+  const filteredData = useGetInfo(pageNumber, airing);
 
-    if(!filteredData) return null;
-    return (
-        <div>
-            {filteredData[0].title}
-        </div>
-    )
+  if (!filteredData) return null;
+  return <div>{filteredData[0].title}</div>;
 }
 
-export default AnimeCardDetailPage
+export default AnimeCardDetailPage;

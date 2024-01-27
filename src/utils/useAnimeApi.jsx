@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const useAnimeApi = (pageNumber, query) => {
+const useAnimeApi = (query, pageNumber, airing) => {
   const [data, setData] = useState({ data: null, pagination: null });
 
   const fetchData = async () => {
@@ -9,6 +10,11 @@ const useAnimeApi = (pageNumber, query) => {
       if (query) {
         apiUrl += `&q=${encodeURIComponent(query)}`;
       }
+
+      if (airing) {
+        apiUrl += `&status=airing`;
+      }
+
       const response = await fetch(apiUrl);
       const json = await response.json();
       console.log(json.data);
@@ -19,10 +25,20 @@ const useAnimeApi = (pageNumber, query) => {
   };
 
   useEffect(() => {
+    setData({ data: null, pagination: null });
     fetchData();
-  }, [pageNumber]);
+  }, [pageNumber, airing]);
 
   return { data, fetchData };
 };
+
+export function useGetInfo(pageNumber, airing) {
+  const { id } = useParams();
+  const { data } = useAnimeApi("", pageNumber, airing);
+
+  if (!data.data) return null;
+  const filteredCard = data.data.filter((d) => d.mal_id == id);
+  return filteredCard;
+}
 
 export default useAnimeApi;
