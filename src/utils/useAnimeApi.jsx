@@ -17,7 +17,7 @@ const useAnimeApi = (query, pageNumber, airing) => {
 
       const response = await fetch(apiUrl);
       const json = await response.json();
-      console.log(json.data);
+      // console.log(json.data);
       setData({ data: json.data, pagination: json.pagination });
     } catch (error) {
       console.error("Error fetching data:", error);
