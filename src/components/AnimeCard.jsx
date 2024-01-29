@@ -5,13 +5,18 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useFavorite } from "../utils/FavouriteContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function ImgMediaCard({ item }) {
   const { state, dispatch } = useFavorite();
   const { user } = useAuth0();
-  // console.log(user.sub);
+
+  const [storeId, setStoreId] = useState(() => {
+    const storedItems = JSON.parse(localStorage.getItem("item")) || [];
+    return storedItems.map((item) => item.mal_id);
+  });
+
   let newDescription;
 
   if (item.background !== null) {
@@ -27,30 +32,30 @@ export default function ImgMediaCard({ item }) {
     item.title?.length > 20 ? item.title.slice(0, 20) + "..." : item.title;
 
   const addToFavorites = (e) => {
-    e.preventDefault(); // Prevent the default behavior of the button
+    e.preventDefault();
     e.stopPropagation();
+    let globalItem = ([...state.favourites] =
+      JSON.parse(localStorage.getItem("item")) || []);
 
-    // const storedItems = () => {
-    //   try {
-    //     return JSON.parse(localStorage.getItem(`favorites_${user.sub}`)) || [];
-    //   } catch (error) {
-    //     return null;
-    //   }
-    // };
-    // console.log("stored items: ", storedItems);
-    // if (!storedItems.some((stored) => stored.mal_id === item.mal_id)) {
+    if (![...state.favourites].some((old) => old.mal_id === item.mal_id)) {
+      globalItem = [...state.favourites, item];
+      localStorage.setItem("item", JSON.stringify(globalItem));
+      setStoreId(globalItem.map((up) => up.mal_id));
+    } else {
+      // console.log("remove this item");
+      dispatch({ type: "REMOVE_FAV", payload: item });
+      const newArr = JSON.parse(localStorage.item).filter((removedItem) => {
+        return removedItem.mal_id !== item.mal_id;
+      });
 
-    // }
+      state.favourites = newArr;
+      setStoreId(storeId.filter((newStoreId) => newStoreId !== item.mal_id));
+      localStorage.setItem("item", JSON.stringify(state.favourites));
+      // console.log("filtered array: ", newArr);
+    }
 
-    const updatedItems = [...state.favourites, item];
-    localStorage.setItem(`favorites_${user.sub}`, JSON.stringify(updatedItems));
-    console.log("updated Items: ", updatedItems);
     dispatch({ type: "ADD_FAV", payload: item });
-
-    // localStorage.setItem(
-    //   `favorites_${user.sub}`,
-    //   JSON.stringify([...state.favourites, item])
-    // );
+    // console.log("stored Items: ", storeId);
   };
 
   return (
@@ -75,7 +80,20 @@ export default function ImgMediaCard({ item }) {
           className="p-2 border border-black"
           onClick={addToFavorites}
         >
-          Add to Fav
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill={storeId.includes(item.mal_id) ? "red" : "none"}
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="red"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+            />
+          </svg>
         </Button>
       </CardActions>
     </Card>

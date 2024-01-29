@@ -26,6 +26,16 @@ const reducer = (state, action) => {
         favourites: action.payload,
       };
 
+    case actions.REMOVE_FAV:
+      return {
+        ...state,
+        favourites: state.favourites.filter((fav) => {
+          fav.mal_id !== action.payload.mal_id;
+          // console.log("remove context: ", action.payload.mal_id),
+          // console.log("fav context: ", fav.mal_id);
+        }),
+      };
+
     default:
       return state;
   }
