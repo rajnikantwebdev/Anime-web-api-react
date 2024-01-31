@@ -9,7 +9,7 @@ function UserFav({}) {
   const [userFav, setUserFav] = useState(() => {
     return JSON.parse(localStorage.getItem("item")) || [];
   });
-  console.log("userFav", userFav);
+  // console.log("userFav", userFav);
 
   // useEffect(() => {
   //   if (isAuthenticated && user) {

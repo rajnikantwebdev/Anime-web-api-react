@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const useAnimeApi = (query, pageNumber, airing) => {
+const useAnimeApi = (query, pageNumber, airing, filter) => {
   const [data, setData] = useState({ data: null, pagination: null });
 
   const fetchData = async () => {
     try {
-      let apiUrl = `https://api.jikan.moe/v4/anime?page=${pageNumber}`;
+      let apiUrl = `https://api.jikan.moe/v4/${filter}?page=${pageNumber}`;
       if (query) {
         apiUrl += `&q=${encodeURIComponent(query)}`;
       }
@@ -17,7 +17,7 @@ const useAnimeApi = (query, pageNumber, airing) => {
 
       const response = await fetch(apiUrl);
       const json = await response.json();
-      // console.log(json.data);
+      console.log(json.data);
       setData({ data: json.data, pagination: json.pagination });
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -27,7 +27,7 @@ const useAnimeApi = (query, pageNumber, airing) => {
   useEffect(() => {
     setData({ data: null, pagination: null });
     fetchData();
-  }, [pageNumber, airing]);
+  }, [pageNumber, airing, filter]);
 
   return { data, fetchData };
 };

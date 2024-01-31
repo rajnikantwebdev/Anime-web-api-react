@@ -6,6 +6,8 @@ import { router } from "./App.jsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { FavouriteProvider } from "./utils/FavouriteContext.jsx";
 import { PageProvider } from "./utils/PageNumberContext.jsx";
+import { ThemeProvider } from "./utils/ThemeContext.jsx";
+import FilterProvider from "./utils/FilterContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -16,11 +18,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         redirect_uri: window.location.origin,
       }}
     >
-      <PageProvider>
-        <FavouriteProvider>
-          <RouterProvider router={router} />
-        </FavouriteProvider>
-      </PageProvider>
+      <ThemeProvider>
+        <FilterProvider>
+          <PageProvider>
+            <FavouriteProvider>
+              <RouterProvider router={router} />
+            </FavouriteProvider>
+          </PageProvider>
+        </FilterProvider>
+      </ThemeProvider>
     </Auth0Provider>
   </React.StrictMode>
 );

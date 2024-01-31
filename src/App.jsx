@@ -8,33 +8,15 @@ import UserFav from "./components/UserFav";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      // <FavouriteProvider>
-      //   <PageProvider>
-      <Homepage />
-      //   </PageProvider>
-      // </FavouriteProvider>
-    ),
+    element: <Homepage />,
   },
   {
     path: "/anime/:id/full",
-    element: (
-      // <FavouriteProvider>
-      //   <PageProvider>
-      <AnimeCardDetailPage />
-      //   </PageProvider>
-      // </FavouriteProvider>
-    ),
+    element: <AnimeCardDetailPage />,
   },
   {
     path: "/user-favourite",
-    element: (
-      // <FavouriteProvider>
-      // <PageProvider>
-      <UserFav />
-      // </PageProvider>
-      // </FavouriteProvider>
-    ),
+    element: <UserFav />,
   },
 ]);
 
