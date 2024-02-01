@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useTheme } from "../utils/ThemeContext";
 
 function UserFavComponent() {
+  const { theme } = useTheme();
   return (
     <Link to={"/user-favourite"}>
       <svg
@@ -8,7 +10,7 @@ function UserFavComponent() {
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
-        stroke="currentColor"
+        stroke={`${theme === "dark" ? "white" : "currentColor"}`}
         className="w-6 h-6"
       >
         <path

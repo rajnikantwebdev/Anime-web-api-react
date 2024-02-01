@@ -3,8 +3,6 @@ import { useTheme } from "../utils/ThemeContext";
 
 export const DarkAndLightMode = () => {
   const { theme, setTheme } = useTheme();
-  // console.log(theme);
-  // console.log("loacalstorage: ", JSON.parse(localStorage.getItem("theme")));
   useEffect(() => {
     localStorage.setItem("theme", JSON.stringify(theme));
   }, [theme]);
@@ -14,13 +12,13 @@ export const DarkAndLightMode = () => {
   };
   return (
     <>
-      {theme === "dark" ? (
+      {theme !== "dark" ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
-          stroke="white"
+          stroke="black"
           className="w-6 h-6 cursor-pointer"
           onClick={() => {
             handleThemeChange();
@@ -38,7 +36,7 @@ export const DarkAndLightMode = () => {
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth="1.5"
-          stroke="currentColor"
+          stroke="white"
           className="w-6 h-6 cursor-pointer"
           onClick={() => handleThemeChange()}
         >

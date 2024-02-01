@@ -1,18 +1,21 @@
 import { useContext, useState } from "react";
 import { PageContext } from "../utils/PageNumberContext";
 import { IconButton } from "@material-tailwind/react";
-import { Select, Option } from "@material-tailwind/react";
+import { useTheme } from "../utils/ThemeContext";
 
 function SortBy({ setAiring }) {
   const { airing } = useContext(PageContext);
+  const { theme } = useTheme();
 
   return (
-    <div className="flex gap-2">
+    <div>
       <div>
-        <Select label="Sort by">
-          <Option onClick={() => setAiring(true)}>Airing</Option>
-          <Option>Material Tailwind CSS</Option>
-        </Select>
+        <select
+          className={`${theme === "dark" && "bg-[#23272F] text-white"} px-2`}
+        >
+          <option onClick={() => setAiring(true)}>Airing</option>
+          <option>Ecchi</option>
+        </select>
       </div>
       {airing ? (
         <IconButton

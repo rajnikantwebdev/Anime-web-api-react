@@ -20,7 +20,7 @@ const Header = ({
 }) => {
   const { isAuthenticated } = useAuth0();
   return (
-    <header className="flex gap-8 items-center w-full py-4">
+    <header className="flex gap-8 items-center w-full py-8 pb-12">
       <SearchBar value={query} onChange={onChange} onClick={onClick} />
       <SimplePagination
         page={page}

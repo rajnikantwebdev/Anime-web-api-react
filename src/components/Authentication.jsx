@@ -1,9 +1,12 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "@material-tailwind/react";
+import { useTheme } from "../utils/ThemeContext";
 
 function Authenticate() {
   const { isLoading, isAuthenticated, error, user, loginWithRedirect, logout } =
     useAuth0();
+  const { theme } = useTheme();
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -23,7 +26,9 @@ function Authenticate() {
           onClick={() =>
             logout({ logoutParams: { returnTo: window.location.origin } })
           }
-          className="flex items-center gap-2"
+          className={`flex items-center gap-2 ${
+            theme === "dark" && "bg-[#16181D]"
+          }`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

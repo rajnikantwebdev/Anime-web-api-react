@@ -1,4 +1,3 @@
-import ImgMediaCard from "./AnimeCard";
 import useAnimeApi from "../utils/useAnimeApi";
 import { Link } from "react-router-dom";
 import ShimmerEffect from "./ShimmerEffect";
@@ -7,6 +6,8 @@ import { PageContext } from "../utils/PageNumberContext";
 import { useTheme } from "../utils/ThemeContext";
 import Header from "./Header";
 import { FilterContext } from "../utils/FilterContext";
+import Card from "./Card";
+import { HigerOrderComponent } from "./Card";
 
 function Api() {
   const [query, setQuery] = useState("");
@@ -21,6 +22,7 @@ function Api() {
     airing,
     filterOption
   );
+  const ComponentWithYoutube = HigerOrderComponent(Card);
 
   function handleOnClick() {
     setFilteredAnimeData(null);
@@ -42,19 +44,24 @@ function Api() {
         hasNextPage={data.pagination?.has_next_page}
         setAiring={setAiring}
       />
-      <div className="flex gap-4 flex-wrap justify-around">
-        {!filteredAnimeData ? (
-          <ShimmerEffect />
-        ) : (
-          filteredAnimeData.map((anime) => {
+
+      {!filteredAnimeData ? (
+        <ShimmerEffect />
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 content-end">
+          {filteredAnimeData.map((anime) => {
             return (
               <Link to={`/anime/${anime.mal_id}/full`} key={anime.mal_id}>
-                <ImgMediaCard item={anime} />
+                {anime?.trailer?.embed_url !== null ? (
+                  <ComponentWithYoutube item={anime} />
+                ) : (
+                  <Card item={anime} />
+                )}
               </Link>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 }

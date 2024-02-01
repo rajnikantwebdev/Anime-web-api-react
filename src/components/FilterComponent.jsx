@@ -1,8 +1,10 @@
 import { useContext, useState } from "react";
 import { FilterContext } from "../utils/FilterContext";
+import { useTheme } from "../utils/ThemeContext";
 
 const FilterComponent = () => {
   const { filterOption, setFilterOption } = useContext(FilterContext);
+  const { theme } = useTheme();
   const optionsArr = [
     { value: "anime", text: "Anime" },
     { value: "manga", text: "Manga" },
@@ -11,13 +13,17 @@ const FilterComponent = () => {
   return (
     <>
       <select
-        name="selectedFruit"
+        name="Genre"
         value={filterOption}
         onChange={(e) => setFilterOption(e.target.value)}
-        className="px-2"
+        className={`${theme === "dark" && "bg-[#23272F] text-white"} px-2`}
       >
         {optionsArr.map((opt) => {
-          return <option value={opt.value}>{opt.text}</option>;
+          return (
+            <option key={opt.value} value={opt.value}>
+              {opt.text}
+            </option>
+          );
         })}
       </select>
     </>
