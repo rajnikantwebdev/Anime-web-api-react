@@ -6,6 +6,7 @@ import UserFavComponent from "./UserFavComponent";
 import { DarkAndLightMode } from "./DarkAndLightMode";
 import { useAuth0 } from "@auth0/auth0-react";
 import FilterComponent from "./FilterComponent";
+import { useTheme } from "../utils/ThemeContext";
 
 const Header = ({
   query,
@@ -19,8 +20,13 @@ const Header = ({
   setFilterValue,
 }) => {
   const { isAuthenticated } = useAuth0();
+  const { theme } = useTheme();
   return (
-    <header className="flex gap-8 items-center w-full py-8 pb-12">
+    <header
+      className={`flex gap-8 items-center w-full py-8 px-6 ${
+        theme === "dark" && "bg-[#23272F]"
+      }`}
+    >
       <SearchBar value={query} onChange={onChange} onClick={onClick} />
       <SimplePagination
         page={page}

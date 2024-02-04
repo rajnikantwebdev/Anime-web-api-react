@@ -7,7 +7,7 @@ function UserFav({}) {
   const { user, isAuthenticated } = useAuth0();
   const { state } = useFavorite();
   const [userFav, setUserFav] = useState(() => {
-    return JSON.parse(localStorage.getItem("item")) || [];
+    return JSON.parse(localStorage.getItem(user?.sub.slice(14))) || [];
   });
 
   if (!userFav) return null;

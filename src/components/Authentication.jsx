@@ -1,32 +1,64 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "@material-tailwind/react";
 import { useTheme } from "../utils/ThemeContext";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../utils/AuthContext";
+import { auth } from "../utils/firebase";
+import { signOut } from "firebase/auth";
 
 function Authenticate() {
   const { isLoading, isAuthenticated, error, user, loginWithRedirect, logout } =
     useAuth0();
+  const { userInfo } = useContext(AuthContext);
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  function handleLogOUt() {
+    signOut(auth)
+      .then(() => {
+        console.log("loggedout");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
+
+  // if (!userInfo) {
+  //   return <div>Loading...</div>;
+  // }
   if (error) {
     return <div>Oops... {error.message}</div>;
   }
 
-  if (isAuthenticated) {
+  if (userInfo) {
     return (
       <div className="flex items-center gap-2">
-        <img
-          src={user.picture}
-          alt={user.name}
-          className="w-8 h-8 rounded-full"
-        />
+        <Link to={"/user"}>
+          {userInfo?.photoUrl ? (
+            <img
+              src={userInfo?.photoUrl}
+              alt={userInfo?.name}
+              className="w-8 h-8 rounded-full"
+            />
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill={theme === "dark" && "gray"}
+              className="w-10 h-10"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </Link>
         <Button
-          onClick={() =>
-            logout({ logoutParams: { returnTo: window.location.origin } })
-          }
-          className={`flex items-center gap-2 ${
+          onClick={() => handleLogOUt()}
+          className={`flex items-center gap-2${
             theme === "dark" && "bg-[#16181D]"
           }`}
         >
@@ -50,7 +82,7 @@ function Authenticate() {
   } else {
     return (
       <Button
-        onClick={() => loginWithRedirect()}
+        onClick={() => navigate("/login")}
         className="flex items-center gap-2"
       >
         <span>Login</span>

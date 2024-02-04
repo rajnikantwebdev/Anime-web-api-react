@@ -10,24 +10,27 @@ import Card from "./Card";
 import { HigerOrderComponent } from "./Card";
 
 function Api() {
-  const [query, setQuery] = useState("");
-  const [filteredAnimeData, setFilteredAnimeData] = useState([]);
   const { theme } = useTheme();
   const { filterOption } = useContext(FilterContext);
-  const { pageNumber, setPageNumber, airing, setAiring } =
-    useContext(PageContext);
-  const { data, fetchData } = useAnimeApi(
+  const {
     query,
+    setQuery,
     pageNumber,
+    setPageNumber,
     airing,
-    filterOption
-  );
-  const ComponentWithYoutube = HigerOrderComponent(Card);
+    setAiring,
+    setFilteredAnimeData,
+    filteredAnimeData,
+    data,
+  } = useContext(PageContext);
 
-  function handleOnClick() {
-    setFilteredAnimeData(null);
-    fetchData();
-  }
+  // const { data, fetchData } = useAnimeApi(
+  //   query,
+  //   pageNumber,
+  //   airing,
+  //   filterOption
+  // );
+  const ComponentWithYoutube = HigerOrderComponent(Card);
 
   useEffect(() => {
     setFilteredAnimeData(data.data);
@@ -35,7 +38,7 @@ function Api() {
 
   return (
     <div className={`px-6 ${theme === "dark" ? "bg-[#23272F]" : "bg-white"}`}>
-      <Header
+      {/* <Header
         query={query}
         onChange={(e) => setQuery(e.target.value)}
         onClick={handleOnClick}
@@ -43,7 +46,7 @@ function Api() {
         setPage={setPageNumber}
         hasNextPage={data.pagination?.has_next_page}
         setAiring={setAiring}
-      />
+      /> */}
 
       {!filteredAnimeData ? (
         <ShimmerEffect />
@@ -52,10 +55,12 @@ function Api() {
           {filteredAnimeData.map((anime) => {
             return (
               <Link to={`/anime/${anime.mal_id}/full`} key={anime.mal_id}>
-                {anime?.trailer?.embed_url !== null ? (
-                  <ComponentWithYoutube item={anime} />
-                ) : (
+                {anime?.trailer?.embed_url === null ||
+                filterOption === "manga" ||
+                filterOption === "characters" ? (
                   <Card item={anime} />
+                ) : (
+                  <ComponentWithYoutube item={anime} />
                 )}
               </Link>
             );

@@ -1,21 +1,27 @@
 import { useFavorite } from "../utils/FavouriteContext";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FilterContext } from "../utils/FilterContext";
 import { useTheme } from "../utils/ThemeContext";
 import YoutubeLogo from "../assets/youtube-logo.svg";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../utils/firebase";
 
 function Card({ item }) {
   const { state, dispatch } = useFavorite();
   const { user, isAuthenticated } = useAuth0();
+
   const { theme } = useTheme();
   const { filterOption } = useContext(FilterContext);
+
   const [storeId, setStoreId] = useState(() => {
-    const storedItems = JSON.parse(localStorage.getItem("item")) || [];
-    return storedItems.map((item) => item.mal_id);
+    const storedItems =
+      JSON.parse(localStorage.getItem(`${user?.sub.slice(14).toString()}`)) ||
+      [];
+    return storedItems.map((storedItem) => storedItem.mal_id);
   });
+
   const notify = (title) => {
     toast(title + " added to favourite");
   };
@@ -41,36 +47,111 @@ function Card({ item }) {
       item?.title?.length > 12 ? item.title.slice(0, 12) + "..." : item.title;
   }
 
-  const addToFavorites = (e) => {
+  // const addToFavorites = (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   if (!(isAuthenticated && user)) {
+  //     window.open(
+  //       "https://dev-sz7lu7z7pspugpt0.us.auth0.com/u/login?state=hKFo2SBVTGFlLU5mZG9hVm9waGNYZFBBSUgyYmN4aDhrby1mNaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIDFOVkNVa2lKRzd0ZUctNlBZbnMtRUt5eUVPMmRyX2FRo2NpZNkgSUFXbEdjSEdvVHpjdlgwZUhwdXhmd3ZTd3VaQmVzNEI"
+  //     );
+  //   } else {
+  //     let globalItem = ([...state.favourites] =
+  //       JSON.parse(localStorage.getItem(`${user?.sub.slice(14).toString()}`)) ||
+  //       []);
+
+  //     if (![...state.favourites].some((old) => old.mal_id === item.mal_id)) {
+  //       globalItem = [...state.favourites, item];
+  //       localStorage.setItem(
+  //         `${user?.sub.slice(14).toString()}`,
+  //         JSON.stringify(globalItem)
+  //       );
+
+  //       setStoreId(globalItem?.map((up) => up.mal_id));
+  //       notify(trimTitle);
+  //     } else {
+  //       dispatch({ type: "REMOVE_FAV", payload: item });
+  //       const newArr = JSON.parse(
+  //         localStorage.getItem(`${user?.sub.slice(14).toString()}`)
+  //       ).filter((removedItem) => {
+  //         return removedItem.mal_id !== item.mal_id;
+  //       });
+
+  //       state.favourites = newArr;
+  //       setStoreId(newArr.map((newItem) => newItem.mal_id));
+  //       localStorage.setItem(
+  //         `${user?.sub.slice(14).toString()}`,
+  //         JSON.stringify(state.favourites)
+  //       );
+  //     }
+
+  //     dispatch({ type: "ADD_FAV", payload: item });
+  //   }
+  // };
+
+  // const addToFavorites = (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   if (!(isAuthenticated && user)) {
+  //     window.open(
+  //       "https://dev-sz7lu7z7pspugpt0.us.auth0.com/u/login?state=hKFo2SBVTGFlLU5mZG9hVm9waGNYZFBBSUgyYmN4aDhrby1mNaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIDFOVkNVa2lKRzd0ZUctNlBZbnMtRUt5eUVPMmRyX2FRo2NpZNkgSUFXbEdjSEdvVHpjdlgwZUhwdXhmd3ZTd3VaQmVzNEI"
+  //     );
+  //   } else {
+  //     let globalItem = ([...state.favourites] =
+  //       JSON.parse(localStorage.getItem(`${user?.sub.slice(14).toString()}`)) ||
+  //       []);
+
+  //     if (![...state.favourites].some((old) => old.mal_id === item.mal_id)) {
+  //       globalItem = [...state.favourites, item];
+  //       localStorage.setItem(
+  //         `${user?.sub.slice(14).toString()}`,
+  //         JSON.stringify(globalItem)
+  //       );
+
+  //       setStoreId(globalItem.map((up) => up.mal_id));
+  //       notify(trimTitle);
+  //     } else {
+  //       dispatch({ type: "REMOVE_FAV", payload: item });
+  //       const newArr = JSON.parse(
+  //         localStorage.getItem(`${user?.sub.slice(14).toString()}`)
+  //       ).filter((removedItem) => {
+  //         return removedItem.mal_id !== item.mal_id;
+  //       });
+
+  //       state.favourites = newArr;
+  //       setStoreId(newArr.map((newItem) => newItem.mal_id));
+  //       localStorage.setItem(
+  //         `${user?.sub.slice(14).toString()}`,
+  //         JSON.stringify(state.favourites)
+  //       );
+  //     }
+
+  //     dispatch({ type: "ADD_FAV", payload: item });
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (user?.sub) {
+  //     const storedItems =
+  //       JSON.parse(localStorage.getItem(`${user?.sub.slice(14).toString()}`)) ||
+  //       [];
+  //     setStoreId(storedItems.map((storedItem) => storedItem.mal_id));
+  //   }
+  // }, [user?.sub]);
+
+  async function addToFavorites(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (!(isAuthenticated && user)) {
-      window.open(
-        "https://dev-sz7lu7z7pspugpt0.us.auth0.com/u/login?state=hKFo2SBVTGFlLU5mZG9hVm9waGNYZFBBSUgyYmN4aDhrby1mNaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIDFOVkNVa2lKRzd0ZUctNlBZbnMtRUt5eUVPMmRyX2FRo2NpZNkgSUFXbEdjSEdvVHpjdlgwZUhwdXhmd3ZTd3VaQmVzNEI"
-      );
-    } else {
-      let globalItem = ([...state.favourites] =
-        JSON.parse(localStorage.getItem("item")) || []);
-
-      if (![...state.favourites].some((old) => old.mal_id === item.mal_id)) {
-        globalItem = [...state.favourites, item];
-        localStorage.setItem("item", JSON.stringify(globalItem));
-        setStoreId(globalItem.map((up) => up.mal_id));
-        notify(trimTitle);
-      } else {
-        dispatch({ type: "REMOVE_FAV", payload: item });
-        const newArr = JSON.parse(localStorage.item).filter((removedItem) => {
-          return removedItem.mal_id !== item.mal_id;
-        });
-
-        state.favourites = newArr;
-        setStoreId(storeId.filter((newStoreId) => newStoreId !== item.mal_id));
-        localStorage.setItem("item", JSON.stringify(state.favourites));
-      }
-
-      dispatch({ type: "ADD_FAV", payload: item });
+    try {
+      console.log("Before addDoc");
+      const favItem = await addDoc(collection(db, "user-fav"), {
+        item: item,
+      });
+      console.log("After addDoc");
+      console.log("added successfully", favItem.id);
+    } catch (error) {
+      console.error("Error adding data:", error);
     }
-  };
+  }
 
   return (
     <div
