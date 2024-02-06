@@ -19,7 +19,7 @@ export const DarkAndLightMode = () => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="black"
-          className="w-6 h-6 cursor-pointer"
+          className="w-8 h-8 cursor-pointer"
           onClick={() => {
             handleThemeChange();
           }}
@@ -37,7 +37,7 @@ export const DarkAndLightMode = () => {
           viewBox="0 0 24 24"
           strokeWidth="1.5"
           stroke="white"
-          className="w-6 h-6 cursor-pointer"
+          className="w-8 h-8 cursor-pointer"
           onClick={() => handleThemeChange()}
         >
           <path

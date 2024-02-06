@@ -8,6 +8,9 @@ import Header from "./Header";
 import { FilterContext } from "../utils/FilterContext";
 import Card from "./Card";
 import { HigerOrderComponent } from "./Card";
+import { SimplePagination } from "./Pagination";
+import SortBy from "./SortBy";
+import FilterComponent from "./FilterComponent";
 
 function Api() {
   const { theme } = useTheme();
@@ -24,12 +27,6 @@ function Api() {
     data,
   } = useContext(PageContext);
 
-  // const { data, fetchData } = useAnimeApi(
-  //   query,
-  //   pageNumber,
-  //   airing,
-  //   filterOption
-  // );
   const ComponentWithYoutube = HigerOrderComponent(Card);
 
   useEffect(() => {
@@ -37,17 +34,20 @@ function Api() {
   }, [query, data.data, airing]);
 
   return (
-    <div className={`px-6 ${theme === "dark" ? "bg-[#23272F]" : "bg-white"}`}>
-      {/* <Header
-        query={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onClick={handleOnClick}
-        page={pageNumber}
-        setPage={setPageNumber}
-        hasNextPage={data.pagination?.has_next_page}
-        setAiring={setAiring}
-      /> */}
-
+    <div
+      className={`px-6 ${
+        theme === "dark" ? "bg-[#23272F]" : "bg-white"
+      }  py-12 flex flex-col items-center gap-8`}
+    >
+      <div className="flex items-center gap-8">
+        <SimplePagination
+          page={pageNumber}
+          setPage={setPageNumber}
+          hasNextPage={data.pagination?.has_next_page}
+        />
+        <SortBy />
+        <FilterComponent />
+      </div>
       {!filteredAnimeData ? (
         <ShimmerEffect />
       ) : (

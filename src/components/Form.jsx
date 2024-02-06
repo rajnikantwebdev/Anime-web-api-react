@@ -4,21 +4,37 @@ import { useTheme } from "../utils/ThemeContext";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../utils/AuthContext";
-import { redirect } from "react-router-dom";
+import * as Yup from "yup";
 
 const Basic = () => {
   const { theme } = useTheme();
   const { userInfo, setUserInfo } = useContext(AuthContext);
   const navigate = useNavigate();
-  console.log("userInfo: ", userInfo);
   const [isSignin, setIsSignin] = useState(true);
-  useEffect(() => {
-    setUserInfo;
+  const SignUpSchema = Yup.object().shape({
+    name: Yup.string()
+      .min(2, "Too short")
+      .max(70, "Too long")
+      .required("Required"),
+    email: Yup.string().email("Invalid Email").required("Required"),
+    password: Yup.string()
+      .min(8, "Password must contain atleast \n8 characters.")
+      .matches(/[a-zA-Z]/, "Password can only contain\nLatin letters.")
+      .required("Required"),
   });
+
+  const SigninSchema = Yup.object().shape({
+    email: Yup.string().email("Invalid Email").required("Required"),
+    password: Yup.string()
+      .required("Invalid email address or password")
+      .required("Required"),
+  });
+
   const handleIsSignIn = () => {
     setIsSignin(!isSignin);
   };
@@ -31,32 +47,12 @@ const Basic = () => {
       <div
         className={`${
           theme === "dark" && "bg-[#16181D]"
-        } px-12 py-16 rounded-lg`}
+        } px-20 py-16 rounded-lg`}
       >
         <h1 className="mb-12 text-3xl font-bold">Register here</h1>
         <Formik
-          initialValues={{ email: "", password: "" }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.email) {
-              errors.email = "Required";
-            } else if (
-              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-            ) {
-              errors.email = "Invalid email address";
-            }
-            if (!values.password) {
-              errors.password = "Required";
-            } else if (
-              !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/.test(
-                values.password
-              )
-            ) {
-              errors.password = "Invalid password";
-            }
-
-            return errors;
-          }}
+          initialValues={{ name: "", email: "", password: "" }}
+          validationSchema={SignUpSchema}
           onSubmit={(values, { setSubmitting }) => {
             async function addUser() {
               try {
@@ -65,11 +61,15 @@ const Basic = () => {
                   values.email,
                   values.password
                 );
+                const updateUser = await updateProfile(auth.currentUser, {
+                  displayName: values.name,
+                });
 
-                setUserInfo(result);
+                navigate("/");
               } catch (error) {
                 const errorCode = error.code;
                 const errorMessage = error.message;
+                console.log("sign up error: ", errorMessage);
               }
             }
             addUser();
@@ -78,6 +78,21 @@ const Basic = () => {
         >
           {({ isSubmitting }) => (
             <Form className="flex flex-col gap-4">
+              <div>
+                <Field
+                  type="name"
+                  name="name"
+                  className={`${
+                    theme === "dark" && "text-black"
+                  } p-2 rounded my-2`}
+                  placeholder="enter your full name"
+                />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-400 text-xs"
+                />
+              </div>
               <div>
                 <Field
                   type="email"
@@ -99,13 +114,13 @@ const Basic = () => {
                   name="password"
                   className={`${
                     theme === "dark" && "text-black"
-                  } p-2 rounded my-2`}
+                  } p-2 rounded my-2 `}
                   placeholder="enter a strong password"
                 />
                 <ErrorMessage
                   name="password"
                   component="div"
-                  className="text-red-400 text-sm"
+                  className="text-red-400 text-xs whitespace-pre-wrap"
                 />
               </div>
               <Link onClick={handleIsSignIn}>
@@ -139,27 +154,7 @@ const Basic = () => {
         <h1 className="mb-12 text-3xl font-bold">Sign in</h1>
         <Formik
           initialValues={{ email: "", password: "" }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.email) {
-              errors.email = "Required";
-            } else if (
-              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-            ) {
-              errors.email = "Invalid email address";
-            }
-            if (!values.password) {
-              errors.password = "Required";
-            } else if (
-              !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/.test(
-                values.password
-              )
-            ) {
-              errors.password = "Invalid password";
-            }
-
-            return errors;
-          }}
+          validationSchema={SigninSchema}
           onSubmit={(values, { setSubmitting }) => {
             async function checkUser() {
               try {
@@ -169,15 +164,17 @@ const Basic = () => {
                   values.password
                 );
                 const result = getUser;
-                console.log("result: ");
                 setUserInfo(result); // Move this line here
-                console.log(userInfo);
-                setSubmitting(false);
+                setSubmitting(true);
                 navigate("/");
               } catch (error) {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                console.log(errorMessage);
+                console.log(errorCode);
+                console.log(typeof errorCode);
+                if (errorCode === "auth/invalid-credential") {
+                }
+                setSubmitting(false);
               }
             }
             checkUser();
@@ -194,6 +191,7 @@ const Basic = () => {
                   } p-2 rounded my-2`}
                   placeholder="enter a valid email"
                 />
+
                 <ErrorMessage
                   name="email"
                   component="div"
@@ -212,7 +210,7 @@ const Basic = () => {
                 <ErrorMessage
                   name="password"
                   component="div"
-                  className="text-red-400 text-sm"
+                  className="text-red-400 text-xs"
                 />
               </div>
               <Link onClick={handleIsSignIn}>

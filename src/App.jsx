@@ -61,7 +61,6 @@ function App() {
     setFilteredAnimeData(null);
     fetchData();
   }
-  console.log("query: ", query);
   return (
     <>
       <Header

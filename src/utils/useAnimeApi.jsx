@@ -17,7 +17,7 @@ const useAnimeApi = (query, pageNumber, airing, filter) => {
 
       const response = await fetch(apiUrl);
       const json = await response.json();
-      console.log(json.data);
+
       setData({ data: json.data, pagination: json.pagination });
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -32,9 +32,9 @@ const useAnimeApi = (query, pageNumber, airing, filter) => {
   return { data, fetchData };
 };
 
-export function useGetInfo(pageNumber, airing) {
+export function useGetInfo(pageNumber, airing, filter) {
   const { id } = useParams();
-  const { data } = useAnimeApi("", pageNumber, airing);
+  const { data } = useAnimeApi("", pageNumber, airing, filter);
 
   if (!data.data) return null;
   const filteredCard = data.data.filter((d) => d.mal_id == id);
