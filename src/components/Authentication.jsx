@@ -1,17 +1,14 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { Button } from "@material-tailwind/react";
 import { useTheme } from "../utils/ThemeContext";
-import { Link, useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../utils/AuthContext";
 import { auth } from "../utils/firebase";
 import { signOut } from "firebase/auth";
-import loginLogo from "../assets/happy-logout.svg";
 
 function Authenticate() {
   const { userInfo } = useContext(AuthContext);
+  const [userName, setUserName] = useState(userInfo?.displayName);
   const { theme } = useTheme();
-  const navigate = useNavigate();
 
   function handleLogOUt() {
     signOut(auth)
@@ -19,16 +16,13 @@ function Authenticate() {
         console.log("loggedout");
       })
       .catch((err) => {
-        console.log(err);
+        console.log("log out error: ", err);
       });
   }
 
-  // if (!userInfo) {
-  //   return <div>Loading...</div>;
-  // }
-  // if (error) {
-  //   return <div>Oops... {error.message}</div>;
-  // }
+  // useEffect(() => {
+  //   setUserName(userInfo?.displayName);
+  // }, [userInfo]);
 
   if (userInfo) {
     return (
@@ -37,7 +31,7 @@ function Authenticate() {
         onClick={handleLogOUt}
       >
         <span className={`text-base ${theme === "dark" && "text-white"}`}>
-          {userInfo?.displayName}
+          {userName}
         </span>
         <svg
           xmlns="http://www.w3.org/2000/svg"

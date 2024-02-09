@@ -16,6 +16,7 @@ export const PageProvider = ({ children }) => {
     airing,
     filterOption
   );
+
   return (
     <PageContext.Provider
       value={{

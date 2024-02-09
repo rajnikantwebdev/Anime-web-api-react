@@ -16,6 +16,7 @@ const Basic = () => {
   const { userInfo, setUserInfo } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isSignin, setIsSignin] = useState(true);
+
   const SignUpSchema = Yup.object().shape({
     name: Yup.string()
       .min(2, "Too short")
@@ -163,8 +164,7 @@ const Basic = () => {
                   values.email,
                   values.password
                 );
-                const result = getUser;
-                setUserInfo(result); // Move this line here
+
                 setSubmitting(true);
                 navigate("/");
               } catch (error) {

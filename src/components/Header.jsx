@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 const Header = ({ query, onClick, onChange }) => {
   const { userInfo, setUserInfo } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUserInfo(user);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useMemo } from "react";
 
 const useAnimeApi = (query, pageNumber, airing, filter) => {
   const [data, setData] = useState({ data: null, pagination: null });
@@ -28,6 +29,9 @@ const useAnimeApi = (query, pageNumber, airing, filter) => {
     setData({ data: null, pagination: null });
     fetchData();
   }, [pageNumber, airing, filter]);
+
+  // const datafromUseMemo = useMemo(fetchData, [pageNumber, airing, filter]);
+  // console.log("useMemo data: ", datafromUseMemo);
 
   return { data, fetchData };
 };
