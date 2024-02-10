@@ -45,7 +45,7 @@ function Api() {
           setPage={setPageNumber}
           hasNextPage={data.pagination?.has_next_page}
         />
-        <SortBy />
+        {/* <SortBy /> */}
         <FilterComponent />
       </div>
       {!filteredAnimeData ? (
